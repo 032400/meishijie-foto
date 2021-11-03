@@ -15,9 +15,9 @@
             <router-link :to="{name:'space',query:{userId:item.userId}}" tag="em">
             作者 {{item.name}}
             </router-link>
-            <el-button class="add" @click="add(item)">添加购物车</el-button>
           </div>
         </router-link> 
+        <el-button class="add" @click="add(item)">添加购物车</el-button>
       </el-card>
     </el-col>
   </el-row>
