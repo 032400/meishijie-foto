@@ -3,9 +3,9 @@
     <h2>吃货们的讨论</h2>
     <div class="comment-text">
       <a href="javascript:;" class="useravatar">
-        <img src="">
+        <img :src="userInfo.avatar">
       </a>
-      <div  v-if="!isLogin">请先登录后，再评论<router-link to="">登录</router-link></div>
+      <div  v-if="!isLogin">请先登录后，再评论<router-link :to="{name:'index',query:{userId:userInfo.userId}}">登录</router-link></div>
       
       <div class="comment-right">
         <el-input
@@ -13,6 +13,7 @@
           :rows="5"
           :cols="50"
           placeholder="请输入内容"
+          v-model="commentText"
         >
         </el-input>
         <div class="comment-button" >
@@ -20,28 +21,36 @@
             class="send-comment" 
             type="primary" 
             size="medium"
+            @click="send"
           >提交</el-button>
         </div>
       </div>
     </div>
     <div class="comment-list-box">
       <ul class="comment-list">
-        <li >
-          <a target="_blank" href="https://i.meishi.cc/cook.php?id=14026963" class="avatar">
-           
-          </a>
-          <router-link to="" class="avatar">
-            <img src="">
-            <h5></h5>
+        <li v-for="item in comments" :key='item.commentId'>
+          <router-link :to="{name:'space',query:{userId:item.userId}}" class="avatar">
+            <img :src="item.userInfo.avatar">
+            <h5>{{item.userInfo.name}}</h5>
           </router-link>
           <div class="comment-detail">
-            <p class="p1"></p>
+            <p class="p1">{{item.commentText}}</p>
             <div class="info clearfix">
-              <span style="float: left;"></span>
+              <span style="float: left;">{{item.createdAt}}</span>
             </div>
           </div>
+          <div class="button">
+            <el-button 
+              class="send-comment" 
+              type="primary" 
+              size="medium" 
+              @click="remove(item)"
+              >删除</el-button>
+          </div>
+          
         </li>
       </ul>
+      
     </div>
   </div>
 </template>
@@ -50,18 +59,45 @@ import {getComments,postComment} from '@/service/api';
 export default {
   name: 'Comment',
   props:{
-
+    info:{
+      type:Object,
+      default:()=>({})
+    }
   },
   data(){
     return {
-
+      comments:[],
+      commentText:''
     }
   },
   computed: {
-
+    isLogin(){
+      return this.$store.getters.isLogin
+    },
+    userInfo(){
+      return this.$store.state.userInfo
+    }
   },
   methods:{
-
+    async send(){
+     let data = await postComment({menuId:this.info.menuId,commentText:this.commentText});
+     this.comments.unshift(data.data.comments)
+    //  console.log(data)
+     this.commentText = '' ;
+    },
+    remove(item){
+      console.log(this.info,item)
+      this.comments.splice(item,1)
+    }
+  },
+  async mounted(){
+    let {menuId} = this.$route.query;
+    if(menuId){
+      let data =await getComments({menuId:menuId})
+      this.comments = data.data.comments ;
+      this.commentText = data.data.commentText
+    }
+    // console.log(this.comments)
   }
 }
 </script>
@@ -97,10 +133,19 @@ export default {
     border-top 1px solid #eee
     margin-top 20px
     padding-top 30px
+   
+    
+      
+
 
     ul li 
       border-bottom 1px solid #eee
       margin-bottom 20px
+      position relative
+      .button
+        position absolute
+        right 0
+        top 20px
       .avatar
         height 82px
         width 50px

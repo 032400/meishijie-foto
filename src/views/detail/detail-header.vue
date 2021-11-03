@@ -1,10 +1,10 @@
 <template>
   <section class="detail-header">
-    <img class="detail-img" src="" />
+    <img class="detail-img" :src="info.product_pic_url" />
     <div class="detail-header-right">
 
       <div class="detail-title clearfix">
-          <h1 class="title">菜品名称</h1>
+          <h1 class="title">{{info.title}}</h1>
           <!--
             1. 不显示，这个菜谱是当前用户发布的
             2. 显示，后端返回一个是否收藏的字段
@@ -14,31 +14,33 @@
             <a 
               href="javascript:;" 
               class="collection-at"
+              :class="{'no-collection-at': info.isCollection}"
+              @click="toggleCollection()"
             > 
-                收藏
+                {{info.isCollection ? '已收藏' : '收藏'}}
             </a>
           </div>
       </div>
       
       <ul class="detail-property clearfix">
-        <li>
-          <strong></strong>
-          <span></span>
+        <li v-for="item in info.properties_show" :key='item.type'>
+          <strong>{{item.name}}</strong>
+          <span>{{item.parent_name}}</span>
         </li>
       </ul>
 
       <div class="user">
-        <router-link id="tongji_author_img" class="img" to="">
-          <img src="">
+        <router-link id="tongji_author_img" class="img" :to="{name:'space',query:{userId:info.userInfo.userId}}">
+          <img :src="info.userInfo.avatar">
         </router-link>
         <div class="info">
           <h4>
-            <router-link id="tongji_author"  to="">
-
+            <router-link id="tongji_author"  :to="{name:'space',query:{userId:info.userInfo.userId}}">
+              {{info.userInfo.name}}
             </router-link>
           </h4>
-          <span>菜谱：菜谱/　关注：关注量　/　粉丝：粉丝量</span>
-          <strong>2020-01-01</strong>
+          <span>菜谱：{{info.userInfo.work_menus_len}}  /　关注：{{info.userInfo.following_len}}　/　粉丝：{{info.userInfo.follows_len}}</span>
+          <strong>{{info.userInfo.createdAt}}</strong>
         </div>
       </div>
 
@@ -55,10 +57,24 @@ export default {
     }
   },
   computed: {
-
+    isOnwer(){
+      return this.info.userInfo.userId === this.$store.state.userInfo.userId
+    }
   },
   methods:{
-
+    async toggleCollection(){
+      if (!this.$store.getters.isLogin) {
+        this.$message({
+          showClose:true,
+          message:'请先登录,在收藏',
+          type:'warning'
+        })
+        return;
+      }
+      const data = await toggleCollection({menuId:this.info.menuId})
+      // console.log(data)
+      this.info.isCollection = data.data.isCollection
+    }
   }
 }
 </script>

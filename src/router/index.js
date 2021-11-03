@@ -12,13 +12,27 @@ import recipe from '@/views/recipe/recipe.vue'
 import space from '@/views/user-space/space.vue'
 import MenuList from '@/views/user-space/menu-list.vue'
 import fans from '@/views/user-space/fans.vue'
+import Create from '@/views/create/create.vue'
+import detail from '@/views/detail/detail.vue'
+import cart from '@/views/cart/cart.vue'
 
 const router = new Router({
     mode:"history",
-    routes:[{
+    routes:[
+        {
         path:'/',
         name:"Home",
         component:Home
+    },
+    {
+        path:'/cart',
+        name:'cart',
+        component:cart
+    },
+    {
+        path:'/detail',
+        name:"detail",
+        component:detail
     },
     {
         path:'/index',
@@ -34,6 +48,20 @@ const router = new Router({
         path:'/recipe',
         name:"recipe",
         component:recipe
+    },
+    {
+        path:'/create',
+        name:"create",
+        component:Create
+    },
+    {
+        path:'/edit',
+        name:"edit",
+        component:edit,
+        meta:{
+            login:true
+        }
+
     },
     {
         path:'/space',
