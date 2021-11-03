@@ -11,6 +11,8 @@ import edit from '@/views/user-space/edit.vue'
 import space from '@/views/user-space/space.vue'
 import MenuList from '@/views/user-space/menu-list.vue'
 import fans from '@/views/user-space/fans.vue'
+import Create from '@/views/create/create.vue'
+
 
 const router = new Router({
     mode:"history",
@@ -28,6 +30,11 @@ const router = new Router({
         path:'/login',
         name:"login",
         component:login
+    },
+    {
+        path:'/create',
+        name:"create",
+        component:Create
     },
     {
         path:'/space',
