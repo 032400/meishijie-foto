@@ -14,6 +14,7 @@
             </router-link>
             <router-link :to="{name:'space',query:{userId:userInfo.userId}}" class="user-name">{{userInfo.name}}</router-link>
             <router-link :to="{name:'create'}" class="collection">发布菜谱</router-link>
+            <router-link :to="{name:'cart'}" class="carts">购物车</router-link>
             <a href="javascript:;" class="collection" @click="send()">退出</a>
           </el-col>
           <el-col :span="6" :offset="3" class="avatar-box" v-if="!isLogin">
@@ -90,7 +91,9 @@ export default {
 .collection 
   margin-left 5px  
   color #fff
-
+.carts
+  color: white
+  margin 0 5px
 </style>
 
 

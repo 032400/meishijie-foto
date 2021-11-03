@@ -7,7 +7,7 @@
       :key='item._id'
     >
       <el-card :body-style="{ padding: '0px' }">
-        <router-link :to="{name:'cart',query:{menuId:item.menuId}}">
+        <router-link :to="{name:'detail',query:{menuId:item.menuId}}">
           <img :src="item.product_pic_url" class="image" style="width: 232px;height: 232px;">
           <div style="padding: 14px;" class="menu-card-detail">
             <strong>菜品名称 {{item.title}}</strong>
@@ -15,7 +15,7 @@
             <router-link :to="{name:'space',query:{userId:item.userId}}" tag="em">
             作者 {{item.name}}
             </router-link>
-            <div class="add" @click="add(item,'ADD')">添加购物车</div>
+            <el-button class="add" @click="add(item)">添加购物车</el-button>
           </div>
         </router-link> 
       </el-card>
@@ -37,20 +37,15 @@ export default {
     }
   },
   methods:{
-    // add(val){
-    //   this.$store.commit('add',val)
-    // },
-    add(item,_type){
-      this.$store.dispatch('setCart',{
-        _id:item._id,
-        name:item.name,
-        title:item.title,
-        product_pic_url:item.product_pic_url,
-        comments_len:item.comments_len
-      })
-      console.log(this.$store.state.cartData)
-    }
+    add(val){
+      console.log(val)
+      this.$store.commit('add',val)
+    },
   },
+  mounted(){
+    // console.log(this.info);
+    this.$store.dispatch('nashuju') // 每个页面都需要调用一下避免数据会刷掉
+  }
 }
 </script>
 

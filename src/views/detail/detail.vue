@@ -1,8 +1,8 @@
 <template>
   <div class="menu-detail">
-    <detail-header></detail-header>
-    <detail-content></detail-content>
-    <Comment></Comment>
+    <detail-header :info="menuInfo"></detail-header>
+    <detail-content :info="menuInfo"></detail-content>
+    <Comment :info="menuInfo"></Comment>
   </div>
 </template>
 <script>
@@ -14,11 +14,42 @@ export default {
   components: {DetailHeader, DetailContent, Comment},
   data(){
     return {
-
+      menuInfo:{
+        userInfo:{},
+        raw_material:[],
+        accessories_material:[]
+      },
+      steps:[]
     }
   },
   watch:{
+    $route:{
+        handler(){
+          let {menuId} = this.$route.query;
+          if (menuId) {
+            menuInfo({menuId}).then(({data})=>{
+              this.menuInfo = data.info;
+              console.log(this.menuInfo)
 
+            })
+          }else{
+            this.$message({
+              showClose:true,
+              message:'请重新进入',
+              type:'warning'
+            })
+          }
+        },
+        immediate:true
+    },
+  },
+  methods:{
+    // async remove(){
+
+    // }
+  },
+  mounted(){
+    console.log(this.menuInfo)
   }
 }
 </script>
