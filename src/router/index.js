@@ -8,6 +8,7 @@ import Home from '@/views/home/Home.vue'
 import index from '@/views/user-login/index.vue'
 import login from '@/views/user-login/login.vue'
 import edit from '@/views/user-space/edit.vue'
+import recipe from '@/views/recipe/recipe.vue'
 import space from '@/views/user-space/space.vue'
 import MenuList from '@/views/user-space/menu-list.vue'
 import fans from '@/views/user-space/fans.vue'
@@ -28,6 +29,11 @@ const router = new Router({
         path:'/login',
         name:"login",
         component:login
+    },
+    {
+        path:'/recipe',
+        name:"recipe",
+        component:recipe
     },
     {
         path:'/space',
