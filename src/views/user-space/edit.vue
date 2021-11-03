@@ -4,6 +4,9 @@
       <span class="label">修改头像</span>
       <upload-img
         imgMaxWidth="210"
+        action="/api/upload?type=user"
+        :imageUrl='avatar'
+        @res-url='hand'
 
       ></upload-img>
     </div>
@@ -35,13 +38,29 @@ import {userEdit} from '@/service/api'
 export default {
   components: {UploadImg},
   data(){
-
+    const userInfo = this.$store.state.userInfo;
+    // console.log(userInfo);
     return {
-
+      name:userInfo.name,
+      sign:userInfo.sign,
+      avatar:userInfo.avatar
     }
   },
   methods:{
-
+   async save(){
+        let edit = await userEdit({
+            name:this.name,
+            sign:this.sign,
+            avatar:this.avatar}) ;
+        if(edit.code === 0){
+          this.$router.push({
+            name:'space'
+          })
+        }
+    },
+    hand(data){
+      this.avatar=data.resImgUrl
+    }    
   }
 }
 </script>

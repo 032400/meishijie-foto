@@ -3,20 +3,23 @@
     <h2>欢迎来到我的美食空间</h2>
     <div class="user-info">
       <div class="user-avatar">
-        <img src="" alt="">
+        <img :src="userInfo.avatar" alt="">
       </div>
       <div class="user-main">
-        <h1></h1>
+        <h1>{{userInfo.name}}</h1>
         <span class="info">
-          <em>加入美食杰</em>
+          <em>{{userInfo.createdAt}}加入美食杰</em>
           |
-          <router-link to="" >编辑个人资料</router-link>
+          <router-link :to="{name:'edit'}" v-if="isOwner">编辑个人资料</router-link>
         </span>
         <div class="tools" >
           <!-- follow-at  no-follow-at-->
 				  <a href="javascript:;" class="follow-at"
+          v-if="!isOwner"
+          @click="toggleHandler"
+          :class="{'no-follow-at':userInfo.isFollowing}"
           >
-            关注
+          {{userInfo.isFollowing ? '已关注' : '关注'}}
           </a>
         </div>
       </div>
@@ -25,32 +28,33 @@
         <li>
           <div>
             <span>关注</span>
-            <strong>77</strong>
+            <strong>{{userInfo.following_len}}</strong>
           </div>
         </li>
         <li>
           <div>
             <span>粉丝</span>
-            <strong>44</strong>
+            <strong>{{userInfo.follows_len}}</strong>
           </div>
         </li>
         <li>
           <div>
             <span>收藏</span>
-            <strong>11</strong>
+            <strong>{{userInfo.collections_len}}</strong>
           </div>
         </li>
         <li>
           <div>
             <span>发布菜谱</span>
-            <strong>55</strong>
+            <strong>{{userInfo.work_menus_len}}</strong>
           </div>
         </li>
       </ul>
     </div>
 
     <!-- v-model="activeName" -->
-    <el-tabs class="user-nav">
+    <el-tabs class="user-nav" v-model="activeName"
+       @tab-click="tabClickHandler">
       <el-tab-pane label="作品" name="works"></el-tab-pane>
       <el-tab-pane label="粉丝" name="fans"></el-tab-pane>
       <el-tab-pane label="关注" name="following"></el-tab-pane>
@@ -62,26 +66,103 @@
       <!-- <menu-card :margin-left="13"></menu-card> -->
       <!-- 粉丝 & 关注 布局 -->
       <!-- <Fans></Fans> -->
-      <router-view ></router-view>
+      <router-view :info="list" :activeName="activeName"></router-view>
     </div>
 
   </div>
 </template>
 <script>
 import {userInfo, toggleFollowing, getMenus, following, fans, collection} from '@/service/api';
+const getOtherInfo = {
+    async works(params){  //作品
+      let data =(await getMenus(params)).data
+      data.flag="works"
+      return data;
+    },
 
-export default {
+    async following(params){ //关注
+      let data=(await following(params)).data
+      data.flag="following"
+      return data;
+    },
+
+
+    async fans(params){ // 粉丝
+     let data=(await fans(params)).data
+     data.flag="fans"
+      return data;
+    },
+
+    async collection(params){  //收藏
+     let data=(await collection(params)).data
+     data.flag="collection"
+      return data;
+    }
+}
+
+  export default {
   name: 'Space',
   data(){
     return {
-
+      userInfo:{},
+      isOwner:false,
+      activeName:'works',
+      list:[],
     }
   },
   watch:{
-
+    // 监听路由变化，来判断路由是否有信息，从而分辨是否为自己的空间
+    $route:{
+     async handler(){
+        let {userId} = this.$route.query;
+        this.isOwner = !userId || userId === this.$store.state.userInfo.userId
+        if (this.isOwner) {
+          this.userInfo = this.$store.state.userInfo;
+        }else{
+          const data = await userInfo({userId});
+          // console.log(data);
+          this.userInfo = data.data ;
+        }
+      // console.log(this.userInfo)
+      // 留存上一次tab的访问信息(视需求而定) this.activeName = this.$route.name;
+      this.getInfo() ; //请求二级路由的数据
+      },
+      immediate:true
+    }
   },
   methods:{
+   async toggleHandler(){
+     const {data}=await toggleFollowing({followUserId:this.userInfo.userId})
+    //  console.log(data)
+    //  因为关注后，要更新的数据里，还有粉丝，所有整体赋值
+     this.userInfo=data;
+    },
+    tabClickHandler(){
+      //问题：keys值重复 在每次切换tab之前，先清空数据
+      this.list =[];
+      
+      this.$router.push({
+        name:this.activeName,
+        query:{
+          ...this.$route.query
+        }
+      })
+    },
+    // 调用封装的请求
+   async getInfo(){
+      let data = await getOtherInfo[this.activeName]({userId:this.userInfo.userId});
+        // 给组件赋值
+      if(this.activeName === data.flag){
+         this.list = data.list;
+      }
+      
+    }
 
+  },
+  mounted(){
+    // console.log(this.userInfo);
+    // console.log(this.list)
+    // console.log(getOtherInfo());
   }
 }
 </script>
