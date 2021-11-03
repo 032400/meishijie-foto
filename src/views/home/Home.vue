@@ -2,33 +2,13 @@
   <div class="home">
     <!-- 轮播 start -->
     <el-carousel :interval="5000" type="card" height="300px">
-      <el-carousel-item>
+      <el-carousel-item v-for="item in banner" :key="item._id">
         <!--/detail?menuId=5d83bfba2f7cb93a4009cf98-->
-        <router-link>
+        <router-link :to="{name:'detail',query:{menuId:item.menuId}}">
           <img 
-            src=""
+            :src="item.product_pic_url"
             width="100%"
             alt=""
-          >
-        </router-link>
-      </el-carousel-item>
-      <el-carousel-item>
-        <!--/detail?menuId=5d83bfba2f7cb93a4009cf98-->
-        <router-link>
-          <img
-                  src=""
-                  width="100%"
-                  alt=""
-          >
-        </router-link>
-      </el-carousel-item>
-      <el-carousel-item>
-        <!--/detail?menuId=5d83bfba2f7cb93a4009cf98-->
-        <router-link>
-          <img
-                  src=""
-                  width="100%"
-                  alt=""
           >
         </router-link>
       </el-carousel-item>
@@ -38,7 +18,7 @@
     <div>
       <h2>内容精选</h2>
       <!-- :info='info' -->
-      <waterfall ref="waterfall">
+      <waterfall ref="waterfall" @view='menuHander'>
         <menu-card :margin-left="13" :info="menuList"></menu-card>
       </waterfall>
     </div>
@@ -49,6 +29,7 @@
 <script>
 import MenuCard from '@/components/menu-card.vue'
 import Waterfall from '@/components/waterfall.vue'
+import {getBanner,getMenus} from '@/service/api.js'
 // 引入 注册 使用
 export default {
   name: 'home',
@@ -58,14 +39,36 @@ export default {
   },
   data(){
     return {
-
+      banner:[],
+      menuList:[],
+      page:1,
+      // pages:10
     }
   },
   mounted(){
-
+    getBanner().then(({data})=>{
+      this.banner = data.list ;
+    }),
+    getMenus({page:this.page}).then(({data})=>{
+      this.menuList = data.list ;
+      // this.pages=Math.ceil(data.total/data.page_size);
+    })
   },
   methods:{
-
+    menuHander(){
+        // console.log('在外部监听的滚动')
+        this.page++;
+        // 2.
+        if(this.page > this.pages){
+          this.$refs.waterfall.isLoading=false;
+          return;
+        }
+        this.$refs.waterfall.isLoading=true;
+        getMenus({page:this.page}).then(({data})=>{
+          this.menuList.push(...data.list);//在第一次数据加载完成后再继续添加(push)渲染五条数据
+          this.$refs.waterfall.isLoading=false;
+      })
+      }
   }
 }
 </script>
