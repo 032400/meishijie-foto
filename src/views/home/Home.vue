@@ -48,6 +48,7 @@ export default {
   mounted(){
     getBanner().then(({data})=>{
       this.banner = data.list ;
+      console.log(this.banner);
     }),
     getMenus({page:this.page}).then(({data})=>{
       this.menuList = data.list ;

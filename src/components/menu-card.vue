@@ -3,86 +3,21 @@
     <el-col
       style="flex:none;" 
       :style="{'margin-left':marginLeft+'px'}"
+      v-for="item in info" 
+      :key='item._id'
     >
       <el-card :body-style="{ padding: '0px' }">
-        <router-link to="">
-          <img src="" class="image" style="width: 232px;height: 232px;">
+        <router-link :to="{name:'cart',query:{menuId:item.menuId}}">
+          <img :src="item.product_pic_url" class="image" style="width: 232px;height: 232px;">
           <div style="padding: 14px;" class="menu-card-detail">
-            <strong>菜品名称</strong>
-            <span>0 评论</span>
-            <router-link to="" tag="em">
-            作者
+            <strong>菜品名称 {{item.title}}</strong>
+            <span>{{item.comments_len}} 评论</span>
+            <router-link :to="{name:'space',query:{userId:item.userId}}" tag="em">
+            作者 {{item.name}}
             </router-link>
+            <div class="add" @click="add(item,'ADD')">添加购物车</div>
           </div>
         </router-link> 
-      </el-card>
-    </el-col>
-    <el-col
-            style="flex:none;"
-            :style="{'margin-left':marginLeft+'px'}"
-    >
-      <el-card :body-style="{ padding: '0px' }">
-        <router-link to="">
-          <img src="" class="image" style="width: 232px;height: 232px;">
-          <div style="padding: 14px;" class="menu-card-detail">
-            <strong>菜品名称</strong>
-            <span>0 评论</span>
-            <router-link to="" tag="em">
-              作者
-            </router-link>
-          </div>
-        </router-link>
-      </el-card>
-    </el-col>
-    <el-col
-            style="flex:none;"
-            :style="{'margin-left':marginLeft+'px'}"
-    >
-      <el-card :body-style="{ padding: '0px' }">
-        <router-link to="">
-          <img src="" class="image" style="width: 232px;height: 232px;">
-          <div style="padding: 14px;" class="menu-card-detail">
-            <strong>菜品名称</strong>
-            <span>0 评论</span>
-            <router-link to="" tag="em">
-              作者
-            </router-link>
-          </div>
-        </router-link>
-      </el-card>
-    </el-col>
-    <el-col
-            style="flex:none;"
-            :style="{'margin-left':marginLeft+'px'}"
-    >
-      <el-card :body-style="{ padding: '0px' }">
-        <router-link to="">
-          <img src="" class="image" style="width: 232px;height: 232px;">
-          <div style="padding: 14px;" class="menu-card-detail">
-            <strong>菜品名称</strong>
-            <span>0 评论</span>
-            <router-link to="" tag="em">
-              作者
-            </router-link>
-          </div>
-        </router-link>
-      </el-card>
-    </el-col>
-    <el-col
-            style="flex:none;"
-            :style="{'margin-left':marginLeft+'px'}"
-    >
-      <el-card :body-style="{ padding: '0px' }">
-        <router-link to="">
-          <img src="" class="image" style="width: 232px;height: 232px;">
-          <div style="padding: 14px;" class="menu-card-detail">
-            <strong>菜品名称</strong>
-            <span>0 评论</span>
-            <router-link to="" tag="em">
-              作者
-            </router-link>
-          </div>
-        </router-link>
       </el-card>
     </el-col>
   </el-row>
@@ -100,7 +35,22 @@ export default {
       type: Array,
       default:() => []
     }
-  }
+  },
+  methods:{
+    // add(val){
+    //   this.$store.commit('add',val)
+    // },
+    add(item,_type){
+      this.$store.dispatch('setCart',{
+        _id:item._id,
+        name:item.name,
+        title:item.title,
+        product_pic_url:item.product_pic_url,
+        comments_len:item.comments_len
+      })
+      console.log(this.$store.state.cartData)
+    }
+  },
 }
 </script>
 
@@ -115,6 +65,9 @@ export default {
   .menu-card-detail
     > *
       display block
+    .add
+      margin-left 130px
+      margin-top: -50px
     strong 
       height 24px
       line-height 24px

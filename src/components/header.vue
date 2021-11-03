@@ -8,17 +8,17 @@
             </a>
           </el-col>
           <el-col :span="10" :offset="2"></el-col>
-          <el-col :span="6" :offset="3" class="avatar-box">
-            <router-link to="">
-              <el-avatar style="vertical-align: middle;" shape="square" size="medium" src=""></el-avatar>
+          <el-col :span="6" :offset="3" class="avatar-box" v-if="isLogin">
+            <router-link :to="{name:'space',query:{userId:userInfo.userId}}">
+              <el-avatar style="vertical-align: middle;" shape="square" size="medium" :src="userInfo.avatar"></el-avatar>
             </router-link>
-            <router-link to="" class="user-name"></router-link>
-            <router-link to="" class="collection">发布菜谱</router-link>
-            <a href="javascript:;" class="collection">退出</a>
+            <router-link :to="{name:'space',query:{userId:userInfo.userId}}" class="user-name">{{userInfo.name}}</router-link>
+            <router-link :to="{name:'create'}" class="collection">发布菜谱</router-link>
+            <a href="javascript:;" class="collection" @click="send()">退出</a>
           </el-col>
-          <el-col :span="6" :offset="3" class="avatar-box">
-            <router-link to="" class="user-name">登录</router-link>
-            <router-link to="" class="collection">注册</router-link>
+          <el-col :span="6" :offset="3" class="avatar-box" v-if="!isLogin">
+            <router-link :to="{name:'index'}" class="user-name">登录</router-link>
+            <router-link to="/index" class="collection">注册</router-link>
           </el-col>
         </el-row>
       </div>
@@ -37,11 +37,30 @@ export default {
   name: 'headers',
   components: {Menus},
   computed:{
-
+    userInfo(){
+      return this.$store.state.userInfo
+    },
+    isLogin(){
+      return this.$store.getters.isLogin
+    }
+  },
+  mounted(){
+    console.log(this.userInfo)
   },
   methods:{
-
-  }
+    send(){
+       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async() => {
+          
+          let login = await login_out();
+          localStorage.removeItem('token')
+          window.location.href='/'
+        })
+      }
+    }
 }
 </script>
 <style lang="stylus">

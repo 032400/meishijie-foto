@@ -13,7 +13,7 @@ const store = new Vuex.Store({
     }
   },
   mutations:{
-    chnageUserInfo(state, data){
+    chageUserInfo(state, data){
       state.userInfo = data;
     }
   },
